@@ -1,14 +1,18 @@
 import path, { sep } from "path";
-import { EOL } from "os";
+import os, { EOL } from "os";
 import readline from "readline";
 import { fileURLToPath } from "url";
 import process from "process";
 
 import { ls } from "./utils/ls.js";
 import { sayHelloToUser } from "./utils/say-hello-to-user.js";
-import { sayGoodBuyToUser } from "./utils/say-bye-to-user.js";
 import { defineCurrentDirectory } from "./utils/define-current-directory.js";
 import { printOSInformation } from "./utils/os/index.js";
+import { closeReadlineProcess } from "./utils/close-readline-proccess.js";
+import { read } from "./utils/fs/read-file.js";
+import { createFile } from "./utils/fs/create-file.js";
+import { renameFile } from "./utils/fs/rename-file.js";
+import { removeFile } from "./utils/fs/remove-file.js";
 
 export const __filename = fileURLToPath(import.meta.url);
 export const __dirname = path.dirname(__filename);
@@ -34,13 +38,21 @@ rl.setPrompt(conf.getPrompt());
 rl.prompt();
 
 const commands = {
-  pwd: function () {
+  add: async function (filename) {
     try {
-      console.log(process.cwd());
-      rl._prompt = conf.getPrompt();
+      await createFile(currentPath, filename);
       rl.prompt();
     } catch (error) {
-      throw new Error(error);
+      console.log(error);
+    }
+  },
+
+  cat: async function (pathToTheFile) {
+    try {
+      await read(currentPath, pathToTheFile);
+      rl.prompt();
+    } catch (error) {
+      console.log(error);
     }
   },
 
@@ -69,14 +81,32 @@ const commands = {
     }
   },
 
-  up: async function () {
+  rn: async function (names) {
     try {
-      currentPath = path.join(currentPath, sep, "..");
-      defineCurrentDirectory(currentPath);
+      await renameFile(currentPath, names);
       rl._prompt = conf.getPrompt();
       rl.prompt();
     } catch (error) {
-      throw new Error(error);
+      console.error(error);
+    }
+  },
+
+  rm: async function (fileName) {
+    try {
+      await removeFile(currentPath, fileName);
+    } catch (error) {
+      console.error(error);
+    }
+  },
+
+  up: async function () {
+    try {
+      if (currentPath !== os.homedir()) {
+        currentPath = path.join(currentPath, sep, "..");
+      }
+      defineCurrentDirectory(currentPath);
+    } catch (error) {
+      console.error(error);
     }
   },
 
@@ -86,19 +116,15 @@ const commands = {
       rl._prompt = conf.getPrompt();
       rl.prompt();
     } catch (error) {
-      throw new Error(error);
+      console.error(error);
     }
   },
 
-  [". exit"]: function (input) {
-    //TODO потом переработать на команду .exit
-    if (input === "SIGINT") {
-      rl.question("Are you sure you want to exit? ", async (answer) => {
-        if (answer.match(/^y(es)?$/i)) {
-          await sayGoodBuyToUser();
-          rl.close();
-        }
-      });
+  [".exit"]: async function () {
+    try {
+      await closeReadlineProcess(rl);
+    } catch (error) {
+      console.error(error);
     }
   },
 };
@@ -121,11 +147,6 @@ rl.on("line", (input) => {
   }
 });
 
-rl.on("SIGINT", () => {
-  rl.question("Are you sure you want to exit? ", async (answer) => {
-    if (answer.match(/^y(es)?$/i)) {
-      await sayGoodBuyToUser();
-      rl.close();
-    }
-  });
+rl.on("SIGINT", async () => {
+  await closeReadlineProcess(rl);
 });
