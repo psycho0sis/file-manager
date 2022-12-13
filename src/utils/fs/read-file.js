@@ -2,8 +2,8 @@ import path from "path";
 import { createReadStream } from "fs";
 import { access, constants } from "fs/promises";
 
-import { ERROR } from "../constants.js";
-import { colorizeInRed } from "../colorize.js";
+import { ERROR } from "../../constants/index.js";
+import { colorizeInRed } from "../index.js";
 
 export const readFile = async (currentPath, pathToTheFile) => {
   try {

@@ -1,7 +1,7 @@
 import { EOL } from "os";
 import process from "process";
 
-import { colorizeInCyan } from "./colorize.js";
+import { colorizeInCyan } from "./index.js";
 import { username } from "../constants/index.js";
 
 export const sayGoodBuyToUser = async () => {

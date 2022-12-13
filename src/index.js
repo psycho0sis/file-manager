@@ -5,18 +5,25 @@ import os, { EOL } from "os";
 import { fileURLToPath } from "url";
 import { access, constants } from "fs/promises";
 
-import { getFilesAndFoldersInCurrentDirectory } from "./utils/get-files-and-folders-in-current-directory.js";
-import { getCommandAndArguments } from "./utils/get-command-and-arguments.js";
-import { defineCurrentDirectory } from "./utils/define-current-directory.js";
-import { closeReadlineProcess } from "./utils/close-readline-proccess.js";
-import { sayHelloToUser } from "./utils/say-hello-to-user.js";
-import { printOSInformation } from "./utils/os/index.js";
-import { createFile } from "./utils/fs/create-file.js";
-import { renameFile } from "./utils/fs/rename-file.js";
-import { removeFile } from "./utils/fs/remove-file.js";
-import { readFile } from "./utils/fs/read-file.js";
-import { calculateHash } from "./utils/hash.js";
-import { ERROR } from "./utils/constants.js";
+import { ERROR } from "./constants/index.js";
+
+import {
+  getFilesAndFoldersInCurrentDirectory,
+  getCommandAndArguments,
+  defineCurrentDirectory,
+  closeReadlineProcess,
+  sayHelloToUser,
+  printOSInformation,
+  runCommand,
+  calculateHash,
+} from "./utils/index.js";
+
+import {
+  createFile,
+  renameFile,
+  removeFile,
+  readFile,
+} from "./utils/fs/index.js";
 
 export const __filename = fileURLToPath(import.meta.url);
 export const __dirname = path.dirname(__filename);
@@ -45,7 +52,8 @@ const commands = {
   add: async (filename) => {
     await createFile(currentPath, filename);
 
-    rl.prompt();
+    // rl._prompt = conf.getPrompt();
+    // rl.prompt();
   },
 
   cat: async (pathToTheFile) => {
@@ -56,17 +64,21 @@ const commands = {
   },
 
   cd: async (pathToFolder) => {
-    await access(
-      path.join(currentPath, pathToFolder),
-      constants.R_OK | constants.W_OK
-    );
-    currentPath = path.join(currentPath, pathToFolder);
-
-    rl._prompt = conf.getPrompt();
-    rl.prompt();
+    try {
+      await access(
+        path.join(currentPath, pathToFolder),
+        constants.R_OK | constants.W_OK
+      );
+      currentPath = path.join(currentPath, pathToFolder);
+    } catch {
+      console.log(ERROR);
+    } finally {
+      rl._prompt = conf.getPrompt();
+      rl.prompt();
+    }
   },
 
-  // cd: async function () {
+  // cp: async function () {
   //   try {
   //   } catch (error) {}
   // },
@@ -74,32 +86,34 @@ const commands = {
   hash: async (pathToFile) => {
     await calculateHash(currentPath, pathToFile);
 
+    rl._prompt = conf.getPrompt();
     rl.prompt();
   },
 
   ls: async () => {
     await getFilesAndFoldersInCurrentDirectory(currentPath);
 
-    rl.prompt();
+    // rl._prompt = conf.getPrompt();
+    // rl.prompt();
   },
 
   os: async (input) => {
     const argv = input && input.split("--")[1];
 
     await printOSInformation(argv);
-
-    rl.prompt();
   },
 
   rn: async (fileNames) => {
     await renameFile(currentPath, fileNames);
 
+    rl._prompt = conf.getPrompt();
     rl.prompt();
   },
 
   rm: async (fileName) => {
     await removeFile(currentPath, fileName);
 
+    rl._prompt = conf.getPrompt();
     rl.prompt();
   },
 
@@ -107,9 +121,6 @@ const commands = {
     if (currentPath !== os.homedir()) {
       currentPath = path.join(currentPath, sep, "..");
     }
-
-    rl._prompt = conf.getPrompt();
-    rl.prompt();
   },
 
   [".exit"]: async () => {
@@ -117,16 +128,10 @@ const commands = {
   },
 };
 
-rl.on("line", (input) => {
+rl.on("line", async (input) => {
   const [command, argument] = getCommandAndArguments(input);
 
-  if (command in commands) {
-    try {
-      commands[command](argument);
-    } catch (error) {
-      console.error(ERROR);
-    }
-  }
+  await runCommand(command, commands, argument, rl);
 });
 
 rl.on("SIGINT", async () => {

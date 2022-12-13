@@ -1,10 +1,13 @@
 import { readdir } from "fs/promises";
 
-import { defineCurrentDirectory } from "./define-current-directory.js";
-import { colorizeInRed } from "./colorize.js";
-import { compare } from "./compare.js";
-import { ERROR } from "./constants.js";
-import { isFile } from "./is-file.js";
+import { ERROR } from "../constants/index.js";
+
+import {
+  defineCurrentDirectory,
+  colorizeInRed,
+  compare,
+  isFile,
+} from "./index.js";
 
 export const getFilesAndFoldersInCurrentDirectory = async (path) => {
   try {
