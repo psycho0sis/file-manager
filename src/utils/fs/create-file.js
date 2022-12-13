@@ -1,5 +1,8 @@
-import fs from "fs/promises";
 import path from "path";
+import fs from "fs/promises";
+
+import { ERROR } from "../constants.js";
+import { colorizeInRed } from "../colorize.js";
 
 export const createFile = async (currentPath, file) => {
   const filename = path.join(currentPath, file);
@@ -8,7 +11,8 @@ export const createFile = async (currentPath, file) => {
   try {
     filehandle = await fs.open(filename, "ax");
     filehandle.close();
-  } catch (e) {
-    console.log("Error", e);
+    console.log("File was created");
+  } catch {
+    console.error(colorizeInRed(ERROR));
   }
 };
