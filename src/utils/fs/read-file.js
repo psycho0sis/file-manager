@@ -1,14 +1,22 @@
 import path from "path";
 import { createReadStream } from "fs";
+import { access, constants } from "fs/promises";
 
 import { ERROR } from "../constants.js";
 import { colorizeInRed } from "../colorize.js";
 
 export const readFile = async (currentPath, pathToTheFile) => {
-  const path1 = path.join(currentPath, pathToTheFile);
-  const stream = createReadStream(path1, "utf8");
+  try {
+    await access(
+      path.join(currentPath, pathToFolder),
+      constants.R_OK | constants.W_OK
+    );
 
-  stream.pipe(process.stdout);
+    const path1 = path.join(currentPath, pathToTheFile);
+    const stream = createReadStream(path1, "utf8");
 
-  stream.on("error", () => console.error(colorizeInRed(ERROR)));
+    stream.pipe(process.stdout);
+  } catch (error) {
+    console.error(colorizeInRed(ERROR));
+  }
 };
