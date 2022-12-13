@@ -4,11 +4,16 @@ import { rename } from "fs/promises";
 import { ERROR } from "../constants.js";
 import { colorizeInRed } from "../colorize.js";
 
-export const renameFile = async (currentPath, names) => {
-  const [pathToFile, newName] = names.split(" ");
+export const renameFile = async (currentPath, fileNames) => {
+  const [oldName, newName] = fileNames.split(" ");
 
-  const pathToTheWrongFile = path.join(currentPath, pathToFile);
-  const pathToTheCorrectFile = path.join(currentPath, newName);
+  let pathToTheWrongFile;
+  let pathToTheCorrectFile;
+
+  if (!!oldName && !!newName) {
+    pathToTheWrongFile = path.join(currentPath, oldName);
+    pathToTheCorrectFile = path.join(currentPath, newName);
+  }
 
   try {
     await rename(pathToTheWrongFile, pathToTheCorrectFile);

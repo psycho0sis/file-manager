@@ -49,8 +49,9 @@ const commands = {
   },
 
   cat: async (pathToTheFile) => {
-    await readFile(currentPath, pathToTheFile, rl);
+    await readFile(currentPath, pathToTheFile);
 
+    rl._prompt = conf.getPrompt();
     rl.prompt();
   },
 
@@ -90,8 +91,8 @@ const commands = {
     rl.prompt();
   },
 
-  rn: async (names) => {
-    await renameFile(currentPath, names);
+  rn: async (fileNames) => {
+    await renameFile(currentPath, fileNames);
 
     rl.prompt();
   },
