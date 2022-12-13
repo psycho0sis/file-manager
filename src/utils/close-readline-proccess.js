@@ -8,6 +8,8 @@ export const closeReadlineProcess = async (rl) => {
       if (answer.match(/^y(es)?$/i)) {
         await sayGoodBuyToUser();
         rl.close();
+      } else {
+        rl.prompt();
       }
     }
   );
