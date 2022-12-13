@@ -5,7 +5,9 @@ import { username } from "../constants/index.js";
 
 export const sayHelloToUser = async () => {
   process.stdout.write(
-    colorizeInYellow(`Welcome to the File Manager, ${username}!${EOL}`)
+    colorizeInYellow(
+      `Welcome to the File Manager, ${username || "stranger"}!${EOL}`
+    )
   );
   return "";
 };
