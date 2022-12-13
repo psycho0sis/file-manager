@@ -1,18 +1,22 @@
+import process from "process";
+import readline from "readline";
 import path, { sep } from "path";
 import os, { EOL } from "os";
-import readline from "readline";
 import { fileURLToPath } from "url";
-import process from "process";
+import { access, constants } from "fs/promises";
 
-import { ls } from "./utils/ls.js";
-import { sayHelloToUser } from "./utils/say-hello-to-user.js";
+import { getFilesAndFoldersInCurrentDirectory } from "./utils/get-files-and-folders-in-current-directory.js";
+import { getCommandAndArguments } from "./utils/get-command-and-arguments.js";
 import { defineCurrentDirectory } from "./utils/define-current-directory.js";
-import { printOSInformation } from "./utils/os/index.js";
 import { closeReadlineProcess } from "./utils/close-readline-proccess.js";
-import { read } from "./utils/fs/read-file.js";
+import { sayHelloToUser } from "./utils/say-hello-to-user.js";
+import { printOSInformation } from "./utils/os/index.js";
 import { createFile } from "./utils/fs/create-file.js";
 import { renameFile } from "./utils/fs/rename-file.js";
 import { removeFile } from "./utils/fs/remove-file.js";
+import { readFile } from "./utils/fs/read-file.js";
+import { calculateHash } from "./utils/hash.js";
+import { ERROR } from "./utils/constants.js";
 
 export const __filename = fileURLToPath(import.meta.url);
 export const __dirname = path.dirname(__filename);
@@ -38,112 +42,89 @@ rl.setPrompt(conf.getPrompt());
 rl.prompt();
 
 const commands = {
-  add: async function (filename) {
-    try {
-      await createFile(currentPath, filename);
-      rl.prompt();
-    } catch (error) {
-      console.log(error);
-    }
+  add: async (filename) => {
+    await createFile(currentPath, filename);
+
+    rl.prompt();
   },
 
-  cat: async function (pathToTheFile) {
-    try {
-      await read(currentPath, pathToTheFile);
-      rl.prompt();
-    } catch (error) {
-      console.log(error);
-    }
+  cat: async (pathToTheFile) => {
+    await readFile(currentPath, pathToTheFile, rl);
+
+    rl.prompt();
   },
 
-  close: function () {
-    rl.close();
+  cd: async (pathToFolder) => {
+    await access(
+      path.join(currentPath, pathToFolder),
+      constants.R_OK | constants.W_OK
+    );
+    currentPath = path.join(currentPath, pathToFolder);
+
+    rl._prompt = conf.getPrompt();
+    rl.prompt();
   },
 
-  ls: function () {
-    try {
-      ls(currentPath);
-      rl._prompt = conf.getPrompt();
-      rl.prompt();
-    } catch (error) {
-      throw new Error(error);
-    }
+  // cd: async function () {
+  //   try {
+  //   } catch (error) {}
+  // },
+
+  hash: async (pathToFile) => {
+    await calculateHash(currentPath, pathToFile);
+
+    rl.prompt();
   },
 
-  os: async function (input) {
+  ls: async () => {
+    await getFilesAndFoldersInCurrentDirectory(currentPath);
+
+    rl.prompt();
+  },
+
+  os: async (input) => {
     const argv = input && input.split("--")[1];
-    try {
-      await printOSInformation(argv);
-      rl._prompt = conf.getPrompt();
-      rl.prompt();
-    } catch (error) {
-      throw new Error(error);
-    }
+
+    await printOSInformation(argv);
+
+    rl.prompt();
   },
 
-  rn: async function (names) {
-    try {
-      await renameFile(currentPath, names);
-      rl._prompt = conf.getPrompt();
-      rl.prompt();
-    } catch (error) {
-      console.error(error);
-    }
+  rn: async (names) => {
+    await renameFile(currentPath, names);
+
+    rl.prompt();
   },
 
-  rm: async function (fileName) {
-    try {
-      await removeFile(currentPath, fileName);
-    } catch (error) {
-      console.error(error);
-    }
+  rm: async (fileName) => {
+    await removeFile(currentPath, fileName);
+
+    rl.prompt();
   },
 
-  up: async function () {
-    try {
-      if (currentPath !== os.homedir()) {
-        currentPath = path.join(currentPath, sep, "..");
-      }
-      defineCurrentDirectory(currentPath);
-    } catch (error) {
-      console.error(error);
+  up: async () => {
+    if (currentPath !== os.homedir()) {
+      currentPath = path.join(currentPath, sep, "..");
     }
+
+    rl._prompt = conf.getPrompt();
+    rl.prompt();
   },
 
-  help: function () {
-    try {
-      console.log(Object.keys(commands));
-      rl._prompt = conf.getPrompt();
-      rl.prompt();
-    } catch (error) {
-      console.error(error);
-    }
-  },
-
-  [".exit"]: async function () {
-    try {
-      await closeReadlineProcess(rl);
-    } catch (error) {
-      console.error(error);
-    }
+  [".exit"]: async () => {
+    await closeReadlineProcess(rl);
   },
 };
 
 rl.on("line", (input) => {
-  let firstSpace = input.match(/\s/);
+  const [command, argument] = getCommandAndArguments(input);
 
-  let com = input;
-  if (firstSpace) {
-    com = input.slice(0, firstSpace.index);
-  }
-
-  let argument = "";
-  if (firstSpace) {
-    argument = input.slice(firstSpace.index + 1, input.length);
-  }
-
-  if (com in commands) {
-    commands[com](argument);
+  if (command in commands) {
+    try {
+      commands[command](argument);
+    } catch (error) {
+      console.error(ERROR);
+    }
   }
 });
 
