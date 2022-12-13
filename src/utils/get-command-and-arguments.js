@@ -1,10 +1,10 @@
 export const getCommandAndArguments = (input) => {
   const firstSpace = input.match(/\s/);
-  let argument = "";
+  let argument = undefined;
   let command = input;
 
   if (firstSpace) {
-    command = input.slice(0, firstSpace.index);
+    command = input.slice(0, firstSpace.index).trim();
   }
 
   if (firstSpace) {
