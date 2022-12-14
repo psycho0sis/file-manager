@@ -14,6 +14,7 @@ import {
   printOSInformation,
   calculateHash,
   createFile,
+  copyFile,
   renameFile,
   removeFile,
   readFile,
@@ -54,10 +55,10 @@ const commands = {
     prompt();
   },
 
-  // cp: async function () {
-  //   try {
-  //   } catch (error) {}
-  // },
+  cp: async (paths) => {
+    await copyFile(paths);
+    prompt();
+  },
 
   hash: async (pathToFile) => {
     await calculateHash(pathToFile);
@@ -108,3 +109,5 @@ rl.on("line", async (input) => {
 rl.on("SIGINT", async () => {
   await closeReadlineProcess(rl);
 });
+
+process.on("uncaughtException", () => prompt());
