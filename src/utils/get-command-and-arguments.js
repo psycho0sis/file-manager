@@ -1,6 +1,6 @@
 export const getCommandAndArguments = (input) => {
   const firstSpace = input.match(/\s/);
-  let argument = undefined;
+  let args = undefined;
   let command = input;
 
   if (firstSpace) {
@@ -8,10 +8,8 @@ export const getCommandAndArguments = (input) => {
   }
 
   if (firstSpace) {
-    argument = input
-      .slice(firstSpace.index + 1, input.length)
-      .replace(/["']/g, "");
+    args = input.slice(firstSpace.index + 1, input.length).replace(/["']/g, "");
   }
 
-  return [command, argument];
+  return [command, args];
 };
