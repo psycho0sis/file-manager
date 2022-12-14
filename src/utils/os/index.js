@@ -1,7 +1,7 @@
 import os, { EOL } from "os";
 
-export const printOSInformation = async (argv) => {
-  switch (argv) {
+export const printOSInformation = async (flag) => {
+  switch (flag) {
     case "architecture": {
       console.log(`CPU architecture:  ${os.arch()}`);
       break;

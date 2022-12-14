@@ -1,19 +1,13 @@
-import path from "path";
+import { resolve } from "path";
 import fs from "fs/promises";
 
-import { ERROR } from "../../constants/index.js";
-import { colorizeInRed } from "../index.js";
+import { colorizeInGreen } from "../index.js";
 
-export const createFile = async (currentPath, file) => {
-  const filename = path.join(currentPath, file);
+export const createFile = async (file) => {
+  const filename = resolve(process.cwd(), file);
   let filehandle = null;
 
-  try {
-    filehandle = await fs.open(filename, "ax");
-    console.log("File was created");
-  } catch {
-    console.error(colorizeInRed(ERROR));
-  } finally {
-    filehandle.close();
-  }
+  filehandle = await fs.open(filename, "ax");
+  console.log(colorizeInGreen("File was created"));
+  filehandle?.close();
 };

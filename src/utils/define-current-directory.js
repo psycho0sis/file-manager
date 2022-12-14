@@ -3,9 +3,9 @@ import process from "process";
 
 import { colorizeInCyan } from "./colorize.js";
 
-export const defineCurrentDirectory = (dirname) => {
+export const defineCurrentDirectory = () => {
   process.stdout.write(
-    `${EOL}You are currently in ${colorizeInCyan(dirname)}${EOL}`
+    `${EOL}You are currently in ${colorizeInCyan(process.cwd())}${EOL}`
   );
   return "";
 };

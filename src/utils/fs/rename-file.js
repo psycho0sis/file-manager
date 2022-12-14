@@ -1,24 +1,19 @@
-import path from "path";
+import { resolve } from "path";
 import { rename } from "fs/promises";
 
-import { ERROR } from "../../constants/index.js";
-import { colorizeInRed } from "../index.js";
+import { colorizeInGreen } from "../index.js";
 
-export const renameFile = async (currentPath, fileNames) => {
+export const renameFile = async (fileNames) => {
   const [oldName, newName] = fileNames.split(" ");
 
   let pathToTheWrongFile;
   let pathToTheCorrectFile;
 
-  if (!!oldName && !!newName) {
-    pathToTheWrongFile = path.join(currentPath, oldName);
-    pathToTheCorrectFile = path.join(currentPath, newName);
+  if (oldName && newName) {
+    pathToTheWrongFile = resolve(process.cwd(), oldName);
+    pathToTheCorrectFile = resolve(process.cwd(), newName);
   }
 
-  try {
-    await rename(pathToTheWrongFile, pathToTheCorrectFile);
-    console.log("File was renamed.");
-  } catch {
-    console.error(colorizeInRed(ERROR));
-  }
+  await rename(pathToTheWrongFile, pathToTheCorrectFile);
+  console.log(colorizeInGreen("File was renamed."));
 };

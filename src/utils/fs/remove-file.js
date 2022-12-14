@@ -1,16 +1,11 @@
-import path from "path";
+import { resolve } from "path";
 import { unlink } from "fs/promises";
 
-import { ERROR } from "../../constants/index.js";
-import { colorizeInRed } from "../index.js";
+import { colorizeInGreen } from "../index.js";
 
-export const removeFile = async (currentPath, fileName) => {
-  const pathToTheFile = path.join(currentPath, fileName);
+export const removeFile = async (fileName) => {
+  const pathToTheFile = resolve(process.cwd(), fileName);
 
-  try {
-    await unlink(pathToTheFile);
-    console.log("File was deleted.");
-  } catch {
-    console.error(colorizeInRed(ERROR));
-  }
+  await unlink(pathToTheFile);
+  console.log(colorizeInGreen("File was deleted."));
 };

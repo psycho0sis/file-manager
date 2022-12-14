@@ -1,5 +1,15 @@
+import { colorizeInRed } from "../utils/index.js";
+
 export const username = process.argv[2].split("=")[1];
 
-export const ERROR = "Operation failed";
+export const COMMANDS_WITHOUT_ARGS = ["ls", "up", ".exit"];
 
-export const ERROR_ABOUT_REQUIRED_ARGUMENTS = "Please, give required arguments";
+export const ERRORS = {
+  DEFAULT_ERROR: `${colorizeInRed("Operation failed")}`,
+  NO_SUCH_COMMAND_ERROR: `${colorizeInRed("Error:")}No such command -- `,
+  ERROR_ABOUT_REQUIRED_ARGUMENTS: `${colorizeInRed(
+    "Please, give required arguments"
+  )}`,
+};
+
+export const NAME_LIMIT = 100;

@@ -1,19 +1,14 @@
-import path from "path";
+import { resolve } from "path";
 import { createHash } from "crypto";
 import { readFile } from "fs/promises";
 
-import { ERROR } from "../constants/index.js";
-import { colorizeInRed } from "./index.js";
+import { colorizeInGreen } from "./index.js";
 
-export const calculateHash = async (currentPath, pathToFile) => {
-  const pathToTheFile = path.join(currentPath, pathToFile);
+export const calculateHash = async (pathToFile) => {
+  const pathToTheFile = resolve(process.cwd(), pathToFile);
 
-  try {
-    const data = await readFile(pathToTheFile, { encoding: "utf-8" });
-    const hex = createHash("sha256").update(data).digest("hex");
+  const data = await readFile(pathToTheFile, { encoding: "utf-8" });
+  const hex = createHash("sha256").update(data).digest("hex");
 
-    console.log(`Hash was created: ${hex}`);
-  } catch {
-    console.error(colorizeInRed(ERROR));
-  }
+  console.log(colorizeInGreen(`Hash was created: ${hex}`));
 };

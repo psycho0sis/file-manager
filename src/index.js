@@ -1,21 +1,15 @@
+import os from "os";
 import process from "process";
 import readline from "readline";
-import path, { sep } from "path";
-import os, { EOL } from "os";
-import { fileURLToPath } from "url";
-import { access, constants } from "fs/promises";
-
-import { ERROR } from "./constants/index.js";
 
 import {
   getFilesAndFoldersInCurrentDirectory,
-  getCommandAndArguments,
-  defineCurrentDirectory,
   closeReadlineProcess,
   sayHelloToUser,
   printOSInformation,
-  runCommand,
+  commandController,
   calculateHash,
+  getPrompt,
 } from "./utils/index.js";
 
 import {
@@ -25,15 +19,11 @@ import {
   readFile,
 } from "./utils/fs/index.js";
 
-export const __filename = fileURLToPath(import.meta.url);
-export const __dirname = path.dirname(__filename);
+process.chdir(os.homedir());
 
-let currentPath = __dirname;
-
-let conf = {
-  getPrompt: function () {
-    return `${defineCurrentDirectory(currentPath)}${EOL}> `;
-  },
+const prompt = async () => {
+  rl._prompt = getPrompt();
+  rl.prompt();
 };
 
 const rl = readline.createInterface({
@@ -45,37 +35,23 @@ const rl = readline.createInterface({
 rl.prompt();
 
 rl.write(await sayHelloToUser());
-rl.setPrompt(conf.getPrompt());
+rl.setPrompt(getPrompt());
 rl.prompt();
 
 const commands = {
-  add: async (filename) => {
-    await createFile(currentPath, filename);
-
-    // rl._prompt = conf.getPrompt();
-    // rl.prompt();
+  add: async (fileName) => {
+    await createFile(fileName);
+    prompt();
   },
 
   cat: async (pathToTheFile) => {
-    await readFile(currentPath, pathToTheFile);
-
-    rl._prompt = conf.getPrompt();
-    rl.prompt();
+    await readFile(pathToTheFile);
+    prompt();
   },
 
   cd: async (pathToFolder) => {
-    try {
-      await access(
-        path.join(currentPath, pathToFolder),
-        constants.R_OK | constants.W_OK
-      );
-      currentPath = path.join(currentPath, pathToFolder);
-    } catch {
-      console.log(ERROR);
-    } finally {
-      rl._prompt = conf.getPrompt();
-      rl.prompt();
-    }
+    process.chdir(pathToFolder);
+    prompt();
   },
 
   // cp: async function () {
@@ -84,43 +60,35 @@ const commands = {
   // },
 
   hash: async (pathToFile) => {
-    await calculateHash(currentPath, pathToFile);
-
-    rl._prompt = conf.getPrompt();
-    rl.prompt();
+    await calculateHash(pathToFile);
+    prompt();
   },
 
   ls: async () => {
-    await getFilesAndFoldersInCurrentDirectory(currentPath);
-
-    // rl._prompt = conf.getPrompt();
-    // rl.prompt();
+    await getFilesAndFoldersInCurrentDirectory();
+    prompt();
   },
 
-  os: async (input) => {
-    const argv = input && input.split("--")[1];
+  os: async (flag) => {
+    const argv = flag && flag.split("--")[1];
 
     await printOSInformation(argv);
+    prompt();
   },
 
   rn: async (fileNames) => {
-    await renameFile(currentPath, fileNames);
-
-    rl._prompt = conf.getPrompt();
-    rl.prompt();
+    await renameFile(fileNames);
+    prompt();
   },
 
   rm: async (fileName) => {
-    await removeFile(currentPath, fileName);
-
-    rl._prompt = conf.getPrompt();
-    rl.prompt();
+    await removeFile(fileName);
+    prompt();
   },
 
   up: async () => {
-    if (currentPath !== os.homedir()) {
-      currentPath = path.join(currentPath, sep, "..");
-    }
+    process.chdir("..");
+    prompt();
   },
 
   [".exit"]: async () => {
@@ -129,9 +97,12 @@ const commands = {
 };
 
 rl.on("line", async (input) => {
-  const [command, argument] = getCommandAndArguments(input);
-
-  await runCommand(command, commands, argument, rl);
+  if (!input) {
+    rl.prompt();
+  } else {
+    //commandController() - что-то вроде контроллера, запускает функции, передает нужные аргументы, отлавливает ошибки
+    await commandController(input, commands, rl);
+  }
 });
 
 rl.on("SIGINT", async () => {
