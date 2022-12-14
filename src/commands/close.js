@@ -1,5 +1,5 @@
-import { sayGoodBuyToUser } from "./say-bye-to-user.js";
-import { colorizeInRed } from "./colorize.js";
+import { sayGoodBuyToUser } from "../helpers/say-bye-to-user.js";
+import { colorizeInRed } from "../helpers/colorize.js";
 
 export const closeReadlineProcess = async (rl) => {
   rl.question(

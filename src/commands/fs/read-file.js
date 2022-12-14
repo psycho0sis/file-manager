@@ -8,7 +8,7 @@ export const readFile = async (pathToFile) => {
     constants.R_OK | constants.W_OK
   );
 
-  const path1 = path.join(currentPath, pathToFile);
+  const path1 = resolve(process.cwd(), pathToFile);
   const stream = createReadStream(path1, "utf8");
 
   stream.pipe(process.stdout);

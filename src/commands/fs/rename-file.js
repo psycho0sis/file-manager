@@ -1,7 +1,7 @@
 import { resolve } from "path";
 import { rename } from "fs/promises";
 
-import { colorizeInGreen } from "../index.js";
+import { colorizeInGreen } from "../../helpers/index.js";
 
 export const renameFile = async (fileNames) => {
   const [oldName, newName] = fileNames.split(" ");

@@ -1,4 +1,4 @@
-import { colorizeInRed } from "../utils/index.js";
+import { colorizeInRed } from "../helpers/colorize.js";
 
 export const username = process.argv[2].split("=")[1];
 

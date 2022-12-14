@@ -1,6 +1,6 @@
 import { EOL } from "os";
 
-import { colorizeInYellow } from "../utils/colorize.js";
+import { colorizeInYellow } from "../helpers/colorize.js";
 import { username } from "../constants/index.js";
 
 export const sayHelloToUser = async () => {

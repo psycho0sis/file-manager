@@ -1,7 +1,7 @@
 import { readdir } from "fs/promises";
 
 import { NAME_LIMIT } from "../constants/index.js";
-import { compare, isFile } from "./index.js";
+import { compare, isFile } from "../helpers/index.js";
 
 export const getFilesAndFoldersInCurrentDirectory = async () => {
   const files = await readdir(process.cwd(), { withFileTypes: true });

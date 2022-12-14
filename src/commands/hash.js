@@ -2,7 +2,7 @@ import { resolve } from "path";
 import { createHash } from "crypto";
 import { readFile } from "fs/promises";
 
-import { colorizeInGreen } from "./index.js";
+import { colorizeInGreen } from "../helpers/index.js";
 
 export const calculateHash = async (pathToFile) => {
   const pathToTheFile = resolve(process.cwd(), pathToFile);

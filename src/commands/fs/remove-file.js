@@ -1,7 +1,7 @@
 import { resolve } from "path";
 import { unlink } from "fs/promises";
 
-import { colorizeInGreen } from "../index.js";
+import { colorizeInGreen } from "../../helpers/index.js";
 
 export const removeFile = async (fileName) => {
   const pathToTheFile = resolve(process.cwd(), fileName);

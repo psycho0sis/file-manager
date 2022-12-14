@@ -3,21 +3,21 @@ import process from "process";
 import readline from "readline";
 
 import {
-  getFilesAndFoldersInCurrentDirectory,
-  closeReadlineProcess,
   sayHelloToUser,
-  printOSInformation,
   commandController,
-  calculateHash,
   getPrompt,
-} from "./utils/index.js";
+} from "./helpers/index.js";
 
 import {
+  getFilesAndFoldersInCurrentDirectory,
+  closeReadlineProcess,
+  printOSInformation,
+  calculateHash,
   createFile,
   renameFile,
   removeFile,
   readFile,
-} from "./utils/fs/index.js";
+} from "./commands/index.js";
 
 process.chdir(os.homedir());
 

@@ -1,7 +1,7 @@
 import { resolve } from "path";
 import fs from "fs/promises";
 
-import { colorizeInGreen } from "../index.js";
+import { colorizeInGreen } from "../../helpers/index.js";
 
 export const createFile = async (file) => {
   const filename = resolve(process.cwd(), file);
