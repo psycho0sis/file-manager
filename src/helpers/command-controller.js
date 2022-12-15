@@ -1,5 +1,5 @@
 import { COMMANDS_WITHOUT_ARGS, ERRORS } from "../constants/index.js";
-import { colorizeInRed, getCommandAndArguments } from "./index.js";
+import { colorizeInRed, getCommandAndArguments, getPrompt } from "./index.js";
 
 export const commandController = async (input, commands, rl) => {
   const { NO_SUCH_COMMAND_ERROR } = ERRORS;
@@ -12,13 +12,18 @@ export const commandController = async (input, commands, rl) => {
   }
 };
 
-const runCommand = (command, commands, args = null, rl) => {
+const runCommand = async (command, commands, args = null, rl) => {
   if (!COMMANDS_WITHOUT_ARGS.includes(command) && !args) {
     printErrorAndPrompt(ERRORS.ERROR_ABOUT_REQUIRED_ARGUMENTS, rl);
   }
-  commands[command](args).catch(() => {
+  await commands[command](args, command).catch(() => {
     printErrorAndPrompt(ERRORS.DEFAULT_ERROR, rl);
   });
+
+  if (command !== ".exit") {
+    rl._prompt = getPrompt();
+    rl.prompt();
+  }
 };
 
 const printErrorAndPrompt = (error, rl) => {

@@ -10,6 +10,7 @@ export const ERRORS = {
   ERROR_ABOUT_REQUIRED_ARGUMENTS: `${colorizeInRed(
     "Please, give required arguments"
   )}`,
+  NOT_A_FILE_ERROR: `${colorizeInRed("It's not a file!")}`,
 };
 
 export const NAME_LIMIT = 100;
