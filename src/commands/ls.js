@@ -6,12 +6,18 @@ import { compare, isFile } from "../helpers/index.js";
 export const getFilesAndFoldersInCurrentDirectory = async () => {
   const files = await readdir(process.cwd(), { withFileTypes: true });
 
-  const res = files
-    .map((file) => ({
-      Name: file.name.slice(0, NAME_LIMIT),
-      Type: isFile(file),
-    }))
-    .sort((a, b) => compare(a.Type, b.Type));
+  const result = await Promise.all(
+    files.map(async (file) => {
+      const type = (await isFile(file.name)) ? "file" : "directory";
 
-  console.table(res);
+      return {
+        Name: file.name.slice(0, NAME_LIMIT),
+        Type: type,
+      };
+    })
+  );
+
+  const sortedResult = result.sort((a, b) => compare(a.Type, b.Type));
+
+  console.table(sortedResult);
 };
