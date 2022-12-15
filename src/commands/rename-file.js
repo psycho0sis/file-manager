@@ -1,10 +1,13 @@
 import { resolve } from "path";
 import { rename } from "fs/promises";
 
-import { colorizeInGreen } from "../../helpers/index.js";
+import { colorizeInGreen } from "../helpers/index.js";
+import { checkIsFileAndThrowErrorIfNot } from "../helpers/is-file.js";
 
 export const renameFile = async (fileNames) => {
   const [oldName, newName] = fileNames.split(" ");
+
+  await checkIsFileAndThrowErrorIfNot(oldName);
 
   let pathToTheWrongFile;
   let pathToTheCorrectFile;
