@@ -4,6 +4,12 @@ export const username = process.argv[2].split("=")[1];
 
 export const COMMANDS_WITHOUT_ARGS = ["ls", "up", ".exit"];
 
+export const commandsHashMap = {
+  COMMANDS_WITHOUT_ARGS: ["ls", "up", ".exit"],
+  COMMANDS_WITH_ONE_ARG: ["add", "cat", "cd", "hash", "os", "rm"],
+  COMMANDS_WITH_TWO_ARG: ["cp", "compress", "decompress", "mv", "rn"],
+};
+
 export const ERRORS = {
   DEFAULT_ERROR: `${colorizeInRed("Operation failed")}`,
   NO_SUCH_COMMAND_ERROR: `${colorizeInRed("Error:")}No such command -- `,
