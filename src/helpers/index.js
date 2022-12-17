@@ -1,4 +1,3 @@
-export * from "./get-command-and-arguments.js";
 export * from "./define-current-directory.js";
 export * from "./command-controller.js";
 export * from "./compare.js";

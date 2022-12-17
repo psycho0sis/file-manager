@@ -5,7 +5,7 @@ import { colorizeInGreen } from "../helpers/index.js";
 import { checkIsFileAndThrowErrorIfNot } from "../helpers/is-file.js";
 
 export const renameFile = async (fileNames) => {
-  const [oldName, newName] = fileNames.split(" ");
+  const [oldName, newName] = fileNames;
 
   await checkIsFileAndThrowErrorIfNot(oldName);
 
