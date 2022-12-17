@@ -8,4 +8,5 @@ export * from "./hash.js";
 export * from "./read-file.js";
 export * from "./copy-file.js";
 export * from "./move-file.js";
-export * from "./compress-or-decompress.js";
+export * from "./compress.js";
+export * from "./decompress.js";

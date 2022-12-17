@@ -13,9 +13,10 @@ import {
   closeReadlineProcess,
   printOSInformation,
   calculateHash,
-  compressOrDecompress,
+  compress,
   createFile,
   copyFile,
+  decompress,
   moveFile,
   renameFile,
   removeFile,
@@ -40,17 +41,11 @@ const commands = {
 
   cat: async (pathToTheFile) => await readFile(pathToTheFile),
 
-  cd: async (pathToFolder) => {
-    process.chdir(`${pathToFolder}`);
-  },
+  cd: async (pathToFolder) => process.chdir(`${pathToFolder}`),
 
-  compress: async (paths) => await compressOrDecompress(paths),
+  compress: async (paths) => await compress(paths),
 
-  decompress: async (paths, command) => {
-    command === "decompress"
-      ? await compressOrDecompress(paths, "decompress")
-      : await compressOrDecompress(paths);
-  },
+  decompress: async (paths) => await decompress(paths),
 
   cp: async (paths) => await copyFile(paths),
 
