@@ -1,0 +1,20 @@
+{
+  "name": "file-manager",
+  "version": "1.0.0",
+  "description": "Command Line Application with Node.js",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/psycho0sis/file-manager.git"
+  },
+  "author": "psycho0sis",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/psycho0sis/file-manager/issues"
+  },
+  "homepage": "https://github.com/psycho0sis/file-manager#readme"
+}
